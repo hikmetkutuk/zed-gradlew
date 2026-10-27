@@ -1,0 +1,9 @@
+# Go
+server/zed-gradlew
+server/zed-gradlew-*
+
+# Rust / Cargo
+extension/target/
+
+# macOS
+.DS_Store
