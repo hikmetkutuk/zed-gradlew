@@ -6,7 +6,6 @@ import (
 )
 
 func Run(workspaceRoot, taskName string) error {
-	// Zed'i öne getir, Ctrl+` ile terminali aç, komutu çalıştır
 	script := fmt.Sprintf(`
 tell application "Zed"
 	activate

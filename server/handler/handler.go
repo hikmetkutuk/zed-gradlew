@@ -22,6 +22,7 @@ var logger = func() *log.Logger {
 }()
 
 const cmdRun = "gradlew.run"
+const methodShowMessage = "window/showMessage"
 
 type Handler struct {
 	tasks         []gradle.Task
@@ -103,6 +104,9 @@ func filterTopTasks(tasks []gradle.Task) []gradle.Task {
 			result = append(result, t)
 		}
 	}
+	if t, ok := byName["spotlessApply"]; ok {
+		result = append(result, t)
+	}
 	return result
 }
 
@@ -115,13 +119,17 @@ func (h *Handler) CodeLens(context *glsp.Context, params *protocol.CodeLensParam
 
 	var lenses []protocol.CodeLens
 	for _, task := range filtered {
+		title := fmt.Sprintf("▶ %s", task.Name)
+		if task.Name == "spotlessApply" {
+			title = "▶ fmt"
+		}
 		lenses = append(lenses, protocol.CodeLens{
 			Range: protocol.Range{
 				Start: protocol.Position{Line: 0, Character: 0},
 				End:   protocol.Position{Line: 0, Character: 0},
 			},
 			Command: &protocol.Command{
-				Title:     fmt.Sprintf("▶ %s", task.Name),
+				Title:     title,
 				Command:   cmdRun,
 				Arguments: []any{task.Name},
 			},
@@ -146,7 +154,7 @@ func (h *Handler) ExecuteCommand(ctx *glsp.Context, params *protocol.ExecuteComm
 	logger.Printf("ExecuteCommand: running task=%s", taskName)
 
 	msgType := protocol.MessageTypeInfo
-	ctx.Notify("window/showMessage", protocol.ShowMessageParams{
+	ctx.Notify(methodShowMessage, protocol.ShowMessageParams{
 		Type:    msgType,
 		Message: fmt.Sprintf("▶ gradlew %s başlatıldı", taskName),
 	})
@@ -154,13 +162,13 @@ func (h *Handler) ExecuteCommand(ctx *glsp.Context, params *protocol.ExecuteComm
 	go func() {
 		if err := gradle.Run(h.workspaceRoot, taskName); err != nil {
 			logger.Printf("Task %s failed: %v", taskName, err)
-			ctx.Notify("window/showMessage", protocol.ShowMessageParams{
+			ctx.Notify(methodShowMessage, protocol.ShowMessageParams{
 				Type:    protocol.MessageTypeError,
 				Message: fmt.Sprintf("gradlew %s başarısız: %v", taskName, err),
 			})
 		} else {
 			logger.Printf("Task %s completed", taskName)
-			ctx.Notify("window/showMessage", protocol.ShowMessageParams{
+			ctx.Notify(methodShowMessage, protocol.ShowMessageParams{
 				Type:    msgType,
 				Message: fmt.Sprintf("✓ gradlew %s tamamlandı.", taskName),
 			})
