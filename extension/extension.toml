@@ -1,0 +1,11 @@
+id = "zed-gradlew"
+name = "Gradle"
+description = "Gradle task runner via LSP code lenses"
+version = "0.1.0"
+schema_version = 1
+authors = ["hikmetkutuk"]
+repository = "https://github.com/hikmetkutuk/zed-gradlew"
+
+[language_servers.zed-gradlew]
+name = "Gradle LSP"
+language = ["Groovy", "Kotlin"]
