@@ -14,7 +14,7 @@ impl zed::Extension for GradlewExtension {
     ) -> Result<zed::Command> {
         let binary = worktree
             .which("zed-gradlew")
-            .ok_or("zed-gradlew binary not found in PATH")?;
+            .unwrap_or_else(|| "/Users/hikmetkutuk/.local/bin/zed-gradlew".to_string());
 
         Ok(zed::Command {
             command: binary,

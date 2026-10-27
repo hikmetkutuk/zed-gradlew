@@ -8,4 +8,4 @@ repository = "https://github.com/hikmetkutuk/zed-gradlew"
 
 [language_servers.zed-gradlew]
 name = "Gradle LSP"
-language = ["Groovy", "Kotlin"]
+language = "Gradle KTS"
